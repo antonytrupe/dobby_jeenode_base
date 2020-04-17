@@ -5,6 +5,7 @@
 // Data wire is plugged into port 7 on the Arduino
 // Connect a 4.7K resistor between VCC and the data pin (strong pullup)
 #define DHT22_PIN 4
+unsigned long DELAY = 60*1000;
 
 // Setup a DHT22 instance
 DHT22 myDHT22(DHT22_PIN);
@@ -20,10 +21,11 @@ void setup(void)
 void loop(void)
 {
   DHT22_ERROR_t errorCode;
+  int lastTempC=0,lastRH=0,tempC,rh=0;
 
   // The sensor can only be read from every 1-2s, and requires a minimum
   // 2s warm-up after power-on.
-  delay(5000);
+  delay(DELAY);
   if (DEBUG) {
     Serial.print("Requesting data...");
   }
@@ -42,10 +44,21 @@ void loop(void)
     // can be compared reliably for equality:
     //
     char buf[128];
-    sprintf(buf, "[{\"location\":\"living room\",\"t\":%hi.%01hi,\"rh\": %i.%01i}]",
-    myDHT22.getTemperatureCInt() / 10, abs(myDHT22.getTemperatureCInt() % 10),
-    myDHT22.getHumidityInt() / 10, myDHT22.getHumidityInt() % 10);
-    Serial.println(buf);
+    tempC=myDHT22.getTemperatureCInt();
+    rh=myDHT22.getHumidityInt();
+    if(tempC!=lastTempC){
+      sprintf(buf, "[{\"location\":\"living room\",\"t\":%hi.%01hi}]",
+        tempC / 10, abs(tempC % 10));
+      Serial.println(buf);
+    }
+    if(rh!=lastRH){
+      sprintf(buf, "[{\"location\":\"living room\",\"rh\": %i.%01i}]",
+        rh / 10, rh % 10);
+      Serial.println(buf);
+    }
+
+    lastTempC=tempC;
+    lastRH=rh;
     break;
   case DHT_ERROR_CHECKSUM:
     if (DEBUG) {
