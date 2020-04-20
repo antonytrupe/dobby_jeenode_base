@@ -34,7 +34,7 @@ void loop(void)
   {
   case DHT_ERROR_NONE:
     if (DEBUG) {
-      Serial.print("Got Data ");
+      Serial.println("Got Data ");
     }
     //Serial.print(myDHT22.getTemperatureF());
     //Serial.print("F ");
@@ -47,12 +47,12 @@ void loop(void)
     tempC=myDHT22.getTemperatureCInt();
     rh=myDHT22.getHumidityInt();
     if(tempC!=lastTempC){
-      sprintf(buf, "[{\"location\":\"living room\",\"t\":%hi.%01hi}]",
+      sprintf(buf, "[{\"location\":\"living room\",\"attribute\":\"tempC\",\"value\":%hi.%01hi}]",
         tempC / 10, abs(tempC % 10));
       Serial.println(buf);
     }
     if(rh!=lastRH){
-      sprintf(buf, "[{\"location\":\"living room\",\"rh\": %i.%01i}]",
+      sprintf(buf, "[{\"location\":\"living room\",\"attribute\":\"rh\",\"value\": %i.%01i}]",
         rh / 10, rh % 10);
       Serial.println(buf);
     }
